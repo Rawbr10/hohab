@@ -109,8 +109,8 @@ function library:Window(name)
 
     UiWindow.Name = "UiWindow"
     UiWindow.Parent = TurtleUiLib
-    UiWindow.BackgroundColor3 = Color3.fromRGB(200, 190, 200)
-    UiWindow.BorderColor3 = Color3.fromRGB(0, 151, 230)
+    UiWindow.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+    UiWindow.BorderColor3 = Color3.fromRGB(240, 240, 240)
     UiWindow.Position = UDim2.new(0, xOffset, 0, 20)
     UiWindow.Size = UDim2.new(0, 207, 0, 33)
     UiWindow.ZIndex = 4 + zindex
@@ -122,8 +122,8 @@ function library:Window(name)
     local Header = Instance.new("Frame")
     Header.Name = "Header"
     Header.Parent = UiWindow
-    Header.BackgroundColor3 = Color3.fromRGB(198, 185, 200)
-    Header.BorderColor3 = Color3.fromRGB(198, 185, 200)
+    Header.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+    Header.BorderColor3 = Color3.fromRGB(240, 240, 240)
     Header.Position = UDim2.new(0, 0, -0.0202544238, 0)
     Header.Size = UDim2.new(0, 207, 0, 26)
     Header.ZIndex = 5 + zindex
@@ -146,9 +146,9 @@ function library:Window(name)
     Minimise.Name = "Minimise"
     Minimise.Parent = Header
     Minimise.BackgroundColor3 = Color3.fromRGB(196, 186, 200)
-    Minimise.BorderColor3 = Color3.fromRGB(0, 168, 255)
+    Minimise.BorderColor3 = Color3.fromRGB(240, 240, 240)
     Minimise.Position = UDim2.new(0, 185, 0, 2)
-    Minimise.Size = UDim2.new(0, 22, 0, 22)
+    Minimise.Size = UDim2.new(0, 26, 0, 26)
     Minimise.ZIndex = 7 + zindex
     Minimise.Font = Enum.Font.SourceSansLight
     Minimise.Text = "-"
@@ -281,7 +281,7 @@ function library:Window(name)
         ToggleFiller.Parent = ToggleButton
         ToggleFiller.BackgroundColor3 = Color3.fromRGB(68, 189, 50)
         ToggleFiller.BorderColor3 = Color3.fromRGB(50, 58, 68)
-        ToggleFiller.Position = UDim2.new(0, 5, 0, 5)
+        ToggleFiller.Position = UDim2.new(0, 6, 0, 6)
         ToggleFiller.Size = UDim2.new(0, 15, 0, 15)
         ToggleFiller.Visible = on
         ToggleFiller.ZIndex = 2 + zindex
