@@ -106,77 +106,77 @@ function library:Window(name)
     local winCount = windowCount
     local zindex = winCount * 7
     local UiWindow = Instance.new("Frame")
+UiWindow.Name = "UiWindow"
+UiWindow.Parent = TurtleUiLib
+UiWindow.BackgroundColor3 = Color3.fromRGB(66, 66, 66) -- Match title bar
+UiWindow.BorderColor3 = Color3.fromRGB(66, 66, 66) -- Match title bar
+UiWindow.Position = UDim2.new(0, xOffset, 0, 20)
+UiWindow.Size = UDim2.new(0, 207, 0, 33)
+UiWindow.ZIndex = 4 + zindex
+UiWindow.Active = true
+Dragify(UiWindow)
 
-    UiWindow.Name = "UiWindow"
-    UiWindow.Parent = TurtleUiLib
-    UiWindow.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-    UiWindow.BorderColor3 = Color3.fromRGB(240, 240, 240)
-    UiWindow.Position = UDim2.new(0, xOffset, 0, 20)
-    UiWindow.Size = UDim2.new(0, 207, 0, 33)
-    UiWindow.ZIndex = 4 + zindex
-    UiWindow.Active = true
-    Dragify(UiWindow)
+xOffset = xOffset + 230
 
-    xOffset = xOffset + 230
+local Header = Instance.new("Frame")
+Header.Name = "Header"
+Header.Parent = UiWindow
+Header.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+Header.BorderColor3 = Color3.fromRGB(66, 66, 66)
+Header.Position = UDim2.new(0, 0, -0.0202544238, 0)
+Header.Size = UDim2.new(0, 207, 0, 26)
+Header.ZIndex = 5 + zindex
 
-    local Header = Instance.new("Frame")
-    Header.Name = "Header"
-    Header.Parent = UiWindow
-    Header.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-    Header.BorderColor3 = Color3.fromRGB(240, 240, 240)
-    Header.Position = UDim2.new(0, 0, -0.0202544238, 0)
-    Header.Size = UDim2.new(0, 207, 0, 26)
-    Header.ZIndex = 5 + zindex
+local HeaderText = Instance.new("TextLabel")
+HeaderText.Name = "HeaderText"
+HeaderText.Parent = Header
+HeaderText.BackgroundTransparency = 1 -- No background
+HeaderText.Position = UDim2.new(0, 5, 0, 0) -- Small padding left
+HeaderText.Size = UDim2.new(1, -30, 1, 0) -- Leave space for Minimise
+HeaderText.ZIndex = 6 + zindex
+HeaderText.Font = Enum.Font.SourceSans
+HeaderText.Text = name or "Window"
+HeaderText.TextColor3 = Color3.fromRGB(240, 240, 240) -- White text
+HeaderText.TextSize = 17
 
-    local HeaderText = Instance.new("TextLabel")
-    HeaderText.Name = "HeaderText"
-    HeaderText.Parent = Header
-    HeaderText.BackgroundColor3 = Color3.fromRGB(50, 58, 50)
-    HeaderText.BackgroundTransparency = 1.000
-    HeaderText.Position = UDim2.new(0, 0, -0.0020698905, 0)
-    HeaderText.Size = UDim2.new(0, 206, 0, 33)
-    HeaderText.ZIndex = 6 + zindex
-    HeaderText.Font = Enum.Font.SourceSans
-    HeaderText.Text = name or "Window"
-    HeaderText.TextColor3 = Color3.fromRGB(47, 54, 64)
-    HeaderText.TextSize = 17.000
+local Minimise = Instance.new("TextButton")
+local Window = Instance.new("Frame")
 
-    local Minimise = Instance.new("TextButton")
-    local Window = Instance.new("Frame")
-    Minimise.Name = "Minimise"
-    Minimise.Parent = Header
-    Minimise.BackgroundColor3 = Color3.fromRGB(196, 186, 200)
-    Minimise.BorderColor3 = Color3.fromRGB(240, 240, 240)
-    Minimise.Position = UDim2.new(0, 185, 0, 2)
-    Minimise.Size = UDim2.new(0, 26, 0, 26)
-    Minimise.ZIndex = 7 + zindex
-    Minimise.Font = Enum.Font.SourceSansLight
-    Minimise.Text = "-"
-    Minimise.TextColor3 = Color3.fromRGB(0, 0, 0)
-    Minimise.TextSize = 20.000
-    Minimise.MouseButton1Up:connect(function()
-        Window.Visible = not Window.Visible
-	if Window.Visible then
-		Minimise.Text = "-"
-	else
-		Minimise.Text = "+"
-	end
-    end)
+Minimise.Name = "Minimise"
+Minimise.Parent = Header
+Minimise.BackgroundColor3 = Color3.fromRGB(66, 66, 66) -- Same as header
+Minimise.BorderColor3 = Color3.fromRGB(66, 66, 66)
+Minimise.Position = UDim2.new(1, -24, 0, 2) -- Right side nicely inside
+Minimise.Size = UDim2.new(0, 22, 0, 22) -- Perfect fit
+Minimise.ZIndex = 7 + zindex
+Minimise.Font = Enum.Font.SourceSansBold
+Minimise.Text = "-"
+Minimise.TextColor3 = Color3.fromRGB(240, 240, 240) -- White text
+Minimise.TextSize = 20
+Minimise.MouseButton1Up:Connect(function()
+    Window.Visible = not Window.Visible
+    if Window.Visible then
+        Minimise.Text = "-"
+    else
+        Minimise.Text = "+"
+    end
+end)
 
-    Window.Name = "Window"
-    Window.Parent = Header
-    Window.BackgroundColor3 = Color3.fromRGB(47, 54, 64)
-    Window.BorderColor3 = Color3.fromRGB(47, 54, 64)
-    Window.Position = UDim2.new(0, 0, 0, 0)
-    Window.Size = UDim2.new(0, 207, 0, 33)
-    Window.ZIndex = 1 + zindex
+Window.Name = "Window"
+Window.Parent = Header
+Window.BackgroundColor3 = Color3.fromRGB(47, 54, 64)
+Window.BorderColor3 = Color3.fromRGB(47, 54, 64)
+Window.Position = UDim2.new(0, 0, 0, 0)
+Window.Size = UDim2.new(0, 207, 0, 33)
+Window.ZIndex = 1 + zindex
 
-    local functions = {}
-    sizes[winCount] = 33
-    listOffset[winCount] = 10
-    function functions:Button(name, callback)
-        local name = name or "Button"
-        local callback = callback or function() end
+local functions = {}
+sizes[winCount] = 33
+listOffset[winCount] = 10
+
+function functions:Button(name, callback)
+    local name = name or "Button"
+    local callback = callback or function() end
 
         sizes[winCount] = sizes[winCount] + 32
         Window.Size = UDim2.new(0, 207, 0, sizes[winCount] + 10)
