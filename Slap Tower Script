@@ -1,0 +1,211 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local CoreGui = game.CoreGui
+
+-- Check if the game is "Slap Tower"
+local gameId = game.PlaceId
+local supportedGameId = 95508886069297 -- Slap Tower game ID
+
+if gameId ~= supportedGameId then
+    LocalPlayer:Kick("This script is only supported Slap Tower.")
+    return
+end
+
+-- Load the TurtleLib UI
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
+local window = library:Window("Trolling Gui")
+
+local function getchr()
+    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+end
+
+local buttonTeleportCFrame = CFrame.fromMatrix(
+    Vector3.new(38.7524338, 174.74013, 86.301331),
+    Vector3.new(0.999504428, -2.92159203e-08, -0.0314833224):Cross(Vector3.new(3.22803473e-08, 1, 9.68266747e-08)),
+    Vector3.new(3.22803473e-08, 1, 9.68266747e-08)
+)
+
+local buttonPart = workspace:FindFirstChild("Gudock") -- Button part (you can update if needed)
+
+-- Flag to check if the button has been clicked
+local GoldenSlapClicked = false
+
+-- Spam All Toggle (Fading Blocks + Button)
+window:Toggle("Spam All", false, function(state)
+    SpamActive = state
+    if SpamActive then
+        task.spawn(function()
+            while SpamActive do
+                local chr = getchr()
+                local hrp = chr:FindFirstChild("HumanoidRootPart")
+                if not hrp then break end
+                -- Touch all fading blocks
+                for _, part in ipairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                        firetouchinterest(hrp, part, 0)
+                        firetouchinterest(hrp, part, 1)
+                    end
+                end
+                -- Also touch the button
+                if buttonPart and buttonPart:IsA("BasePart") then
+                    firetouchinterest(hrp, buttonPart, 0)
+                    firetouchinterest(hrp, buttonPart, 1)
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Troll Pads Spam Toggle (ONLY fading blocks)
+window:Toggle("Troll Pads Spam", false, function(state)
+    TrollPadsActive = state
+    if TrollPadsActive then
+        task.spawn(function()
+            while TrollPadsActive do
+                local chr = getchr()
+                local hrp = chr:FindFirstChild("HumanoidRootPart")
+                if not hrp then break end
+                for _, part in ipairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                        firetouchinterest(hrp, part, 0)
+                        firetouchinterest(hrp, part, 1)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Button Spam Toggle (ONLY button)
+window:Toggle("Button Spam", false, function(state)
+    ButtonSpamming = state
+    if ButtonSpamming then
+        task.spawn(function()
+            while ButtonSpamming do
+                local chr = getchr()
+                local hrp = chr:FindFirstChild("HumanoidRootPart")
+                if hrp and buttonPart and buttonPart:IsA("BasePart") then
+                    firetouchinterest(hrp, buttonPart, 0)
+                    firetouchinterest(hrp, buttonPart, 1)
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+-- Click The Button once
+window:Button("Click The Button", function()
+    local chr = getchr()
+    local hrp = chr:FindFirstChild("HumanoidRootPart")
+    if hrp and buttonPart and buttonPart:IsA("BasePart") then
+        firetouchinterest(hrp, buttonPart, 0)
+        firetouchinterest(hrp, buttonPart, 1)
+    end
+end)
+
+-- Touch Troll Pads once
+window:Button("Touch The Troll Pads", function()
+    local chr = getchr()
+    local hrp = chr:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        for _, part in ipairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                firetouchinterest(hrp, part, 0)
+                firetouchinterest(hrp, part, 1)
+            end
+        end
+    end
+end)
+
+-- Get Golden Slap (can only be clicked once)
+window:Button("Get All Slap (If don't have)", function()
+    if GoldenSlapClicked then
+        -- If already clicked, show an error message
+        library:Notification("Error", "You Already Got All Slap Gloves")
+        return
+    end
+
+    -- Set the flag to true since the button is now clicked
+    GoldenSlapClicked = true
+
+    local chr = getchr()
+    local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    -- 1st Location
+    local pos1 = Vector3.new(-21.2642021, -3.94245768, 19.8420391)
+    local look1 = Vector3.new(0.0892161205, 9.20766041e-08, 0.99601227)
+    local up1 = Vector3.new(-1.2332201e-08, 1, -9.13406168e-08)
+    hrp.CFrame = CFrame.fromMatrix(pos1, look1:Cross(up1), up1)
+    task.wait(0.6)
+
+    -- 2nd Location
+    local pos2 = Vector3.new(-11.6329842, -3.39227438, 107.925926)
+    local look2 = Vector3.new(0.149412885, -6.11308693e-08, 0.988774896)
+    local up2 = Vector3.new(6.35208224e-08, 1, 5.22262837e-08)
+    hrp.CFrame = CFrame.fromMatrix(pos2, look2:Cross(up2), up2)
+    task.wait(0.6)
+
+    -- 3rd Location (new location)
+    local pos3 = Vector3.new(-184.577942, 780.303284, 39.99)
+    local look3 = Vector3.new(-0.117230855, 0, -0.993104696)
+    local up3 = Vector3.new(0, 1, 0)  -- Assuming this is the up vector for this location
+    hrp.CFrame = CFrame.fromMatrix(pos3, look3:Cross(up3), up3)
+    task.wait(0.6)
+
+    -- Final Button Teleport
+    task.wait(0.3)
+    hrp.CFrame = buttonTeleportCFrame
+end)
+
+-- Teleport To The Button
+window:Button("Teleport To The Button", function()
+    local chr = getchr()
+    local hrp = chr:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        hrp.CFrame = buttonTeleportCFrame
+    end
+end)
+
+window:Button("Join Discord Server", function()
+    local discordLink = "https://discord.gg/d37YjMMwCq"
+    if setclipboard then
+        setclipboard(discordLink)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Notification",
+            Text = "Discord Link Copied",
+            Duration = 6
+        })
+    else
+        warn("Clipboard function not supported.")
+    end
+end)
+
+
+-- Credits
+window:Label("Made By @botreal1 on tiktok", Color3.fromRGB(148, 148, 158))
+
+local function showNotification()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Info",
+        Text = "What's better than this script?",
+        Icon = "rbxassetid://112082878863231",
+        Duration = 10
+    })
+end
+
+showNotification()
+
+local function showNotification()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = " Warning",
+        Text = "If you encounter bugs pls report it in my discord immediately.",
+        Icon = "rbxassetid://117107314745025",
+        Duration = 13
+    })
+end
+
+showNotification()
