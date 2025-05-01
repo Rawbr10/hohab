@@ -1,0 +1,190 @@
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local workspace = game:GetService("Workspace")
+
+local gameId = game.PlaceId
+local supportedGameId = 83312952548612
+
+if gameId ~= supportedGameId then
+    LocalPlayer:Kick("This script only supported Troll is a pinning tower 2.")
+    return
+end
+
+local OwO = library:Window("Trolling Gui")
+
+-- Spam All Toggle (top)
+local SpamActive = false
+OwO:Toggle("Spam All", false, function(state)
+    SpamActive = state
+    if SpamActive then
+        task.spawn(function()
+            while SpamActive do
+                local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+                if not hrp then break end
+                for _, part in pairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                        firetouchinterest(hrp, part, 0)
+                        firetouchinterest(hrp, part, 1)
+                    end
+                end
+                local buttonPart = workspace:FindFirstChild("Gudock")
+                if buttonPart and buttonPart:IsA("BasePart") then
+                    firetouchinterest(hrp, buttonPart, 0)
+                    firetouchinterest(hrp, buttonPart, 1)
+                end
+                task.wait(0.09)
+            end
+        end)
+    end
+end)
+
+-- Troll Pads Spam Toggle (right below Spam All)
+local TrollPadsActive = false
+OwO:Toggle("Troll Pads Spam", false, function(state)
+    TrollPadsActive = state
+    if TrollPadsActive then
+        task.spawn(function()
+            while TrollPadsActive do
+                local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+                if not hrp then break end
+                for _, part in pairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                        firetouchinterest(hrp, part, 0)
+                        firetouchinterest(hrp, part, 1)
+                    end
+                end
+                task.wait(0.09)
+            end
+        end)
+    end
+end)
+
+local ButtonSpamActive = false
+OwO:Toggle("Button Spam", false, function(state)
+    ButtonSpamActive = state
+    if ButtonSpamActive then
+        task.spawn(function()
+            while ButtonSpamActive do
+                local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+                local buttonPart = workspace:FindFirstChild("Gudock")
+                if hrp and buttonPart and buttonPart:IsA("BasePart") then
+                    firetouchinterest(hrp, buttonPart, 0)
+                    firetouchinterest(hrp, buttonPart, 1)
+                end
+                task.wait(0.04)
+            end
+        end)
+    end
+end)
+
+-- Click Button
+OwO:Button("Click The Button", function()
+    local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+    local buttonPart = workspace:FindFirstChild("Gudock")
+    if hrp and buttonPart and buttonPart:IsA("BasePart") then
+        firetouchinterest(hrp, buttonPart, 0)
+        firetouchinterest(hrp, buttonPart, 1)
+    end
+end)
+
+-- Click Troll Pads Button
+OwO:Button("Touch The Troll Pads", function()
+    local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        for _, part in pairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name == "사라지는 파트" then
+                firetouchinterest(hrp, part, 0)
+                firetouchinterest(hrp, part, 1)
+            end
+        end
+    end
+end)
+
+-- Tp To End Button
+local savedLocation = nil
+local locationSaved = false
+local teleportCFrame = CFrame.new(
+    -79.1128115, 153, -81.2,
+    0.142288163, 0, -0.9897995,
+    0, 1, 0,
+    0.9897995, 0, 0.142288163
+)
+
+OwO:Button("Teleport To The Button", function()
+    local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        if not locationSaved then
+            savedLocation = teleportCFrame
+            locationSaved = true
+        end
+        hrp.CFrame = teleportCFrame
+    end
+end)
+
+-- Return to saved TP after respawn
+Players.LocalPlayer.CharacterAdded:Connect(function(char)
+    char:WaitForChild("HumanoidRootPart")
+    if savedLocation then
+        task.wait(0.2)
+        char:FindFirstChild("HumanoidRootPart").CFrame = savedLocation
+    end
+end)
+
+-- Tp To End Button (Fixed Teleport without saving location)
+OwO:Button("Teleport To The End", function()
+    local chr = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = chr and chr:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        -- Teleporting to fixed coordinates 277, 347, -34
+        hrp.CFrame = CFrame.new(277, 347, -34)
+    end
+end)
+
+-- Join Discord Button (new)
+OwO:Button("Join Discord Server", function()
+    local discordLink = "https://discord.gg/d37YjMMwCq"
+    if setclipboard then
+        setclipboard(discordLink)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Thanks!",
+            Text = "Discord Link Copied",
+            Icon = "rbxassetid://112082878863231",
+            Duration = 6
+        })
+    else
+        warn("Clipboard function not supported.")
+    end
+end)
+
+-- Credits Label
+OwO:Label("Made By @botreal1 on tiktok not gui", Color3.fromRGB(142, 143, 154))
+
+-- Create the notification function
+local function showNotification()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Info",
+        Text = "What's better than this script?",
+        Icon = "rbxassetid://112082878863231",
+        Duration = 10
+    })
+end
+
+showNotification()
+
+local function showNotification()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = " Warning",
+        Text = "If you encounter bugs pls report it in my discord immediately.",
+         Icon = "rbxassetid://117107314745025",
+        Duration = 13
+    })
+end
+
+showNotification()
