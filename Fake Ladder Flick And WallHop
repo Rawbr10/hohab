@@ -1,0 +1,140 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local guiName = "WallHopGui"
+local existing = PlayerGui:FindFirstChild(guiName)
+if existing then
+    existing:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = guiName
+screenGui.ResetOnSpawn = false
+screenGui.Parent = PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 120)
+frame.Position = UDim2.new(0.5, -110, 0.5, -60)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Ladder Flick & WallHop Script"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.SourceSansBold
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Parent = frame
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+toggleButton.Size = UDim2.new(0.8, 0, 0.4, 0)
+toggleButton.Position = UDim2.new(0.1, 0, 0.3, 0)
+toggleButton.Text = "OFF"
+toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextScaled = true
+toggleButton.Font = Enum.Font.SourceSans
+
+local buttonCorner = Instance.new("UICorner", toggleButton)
+buttonCorner.CornerRadius = UDim.new(0, 6)
+
+local credits = Instance.new("TextLabel")
+credits.Parent = frame
+credits.Size = UDim2.new(1, 0, 0, 20)
+credits.Position = UDim2.new(0, 0, 1, -24)
+credits.BackgroundTransparency = 1
+credits.Text = "Made by @botreal1 on TikTok"
+credits.TextColor3 = Color3.fromRGB(220, 220, 220)
+credits.TextScaled = true
+credits.Font = Enum.Font.SourceSansItalic
+
+-- Toggle logic
+local toggle = false
+local InfiniteJumpEnabled = true
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local raycastParams = RaycastParams.new()
+raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+local function getWallRaycastResult()
+    local character = LocalPlayer.Character
+    if not character then return nil end
+    local root = character:FindFirstChild("HumanoidRootPart")
+    if not root then return nil end
+
+    raycastParams.FilterDescendantsInstances = {character}
+    local directions = {
+        root.CFrame.LookVector,
+        -root.CFrame.LookVector,
+        root.CFrame.RightVector,
+        -root.CFrame.RightVector
+    }
+
+    local closestHit, minDistance = nil, 3
+    for _, dir in ipairs(directions) do
+        local ray = Workspace:Raycast(root.Position, dir * 2, raycastParams)
+        if ray and ray.Instance and ray.Distance < minDistance then
+            closestHit = ray
+            minDistance = ray.Distance
+        end
+    end
+    return closestHit
+end
+
+toggleButton.MouseButton1Click:Connect(function()
+    toggle = not toggle
+    toggleButton.Text = toggle and "ON" or "OFF"
+    toggleButton.BackgroundColor3 = toggle and Color3.fromRGB(50, 255, 50) or Color3.fromRGB(255, 50, 50)
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if not toggle or not InfiniteJumpEnabled then return end
+
+    local character = LocalPlayer.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    local camera = Workspace.CurrentCamera
+    if not (humanoid and root and camera) then return end
+
+    local rayResult = getWallRaycastResult()
+    if rayResult then
+        InfiniteJumpEnabled = false
+
+        local normal = rayResult.Normal
+        local horizontalNormal = Vector3.new(normal.X, 0, normal.Z).Unit
+        if horizontalNormal.Magnitude < 0.1 then
+            horizontalNormal = (root.CFrame.LookVector * Vector3.new(1, 0, 1)).Unit
+            if horizontalNormal.Magnitude < 0.1 then horizontalNormal = Vector3.new(0, 0, -1) end
+        end
+
+        local cameraLook = camera.CFrame.LookVector
+        local camDir = Vector3.new(cameraLook.X, 0, cameraLook.Z).Unit
+        local baseDir = horizontalNormal
+        local dot = math.clamp(baseDir:Dot(camDir), -1, 1)
+        local angle = math.acos(dot)
+        local cross = baseDir:Cross(camDir)
+        local sign = math.sign(cross.Y)
+        local maxAngle = math.rad(40)
+        local rotateAngle = math.min(angle, maxAngle)
+        local adjustedDir = CFrame.Angles(0, rotateAngle * sign, 0) * baseDir
+
+        root.CFrame = CFrame.lookAt(root.Position, root.Position + adjustedDir)
+        RunService.Heartbeat:Wait()
+
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        root.CFrame = CFrame.lookAt(root.Position, root.Position - baseDir)
+
+        task.wait(0.2)
+        InfiniteJumpEnabled = true
+    end
+end)
