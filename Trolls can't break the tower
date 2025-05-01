@@ -1,0 +1,149 @@
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Turtle UI setup
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
+local window = library:Window("Op Gui")
+
+-- Config
+local TARGET_GAME_ID = 14493533447
+local ATTACK_COOLDOWN = 0.02
+local SLAP_POWER = 50000
+local HITBOX_SIZE = 330
+local slapToolName = "SlapTool"
+local hugePower = 13e18
+local Spamming = true
+local teleporting = false
+local invis_on = false
+
+-- Game check
+if game.PlaceId ~= TARGET_GAME_ID then
+	TeleportService:Teleport(TARGET_GAME_ID, LocalPlayer)
+	wait(5)
+	return
+end
+
+-- Slap Aura
+local hitboxIndicator
+local cachedPlayers = {}
+
+local function createHitbox()
+	if hitboxIndicator then hitboxIndicator:Destroy() end
+	local part = Instance.new("Part")
+	part.Name = "TrollHitbox"
+	part.Size = Vector3.new(HITBOX_SIZE, HITBOX_SIZE, HITBOX_SIZE)
+	part.Anchored = true
+	part.CanCollide = false
+	part.Transparency = 0.5
+	part.Color = Color3.fromRGB(150, 100, 255)
+	part.Material = Enum.Material.ForceField
+	part.Parent = workspace
+	hitboxIndicator = part
+end
+
+local function getAttackRemote()
+	local char = LocalPlayer.Character
+	if char then
+		for _, tool in pairs(char:GetChildren()) do
+			if tool:IsA("Tool") and tool:FindFirstChild("Event") then
+				return tool.Event
+			end
+		end
+	end
+	return nil
+end
+
+local function updatePlayerCache()
+	cachedPlayers = {}
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			table.insert(cachedPlayers, p)
+		end
+	end
+end
+
+local function triggerHitbox()
+	createHitbox()
+	while Spamming do
+		local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+		local remote = getAttackRemote()
+		if root and remote then
+			updatePlayerCache()
+			for _, target in pairs(cachedPlayers) do
+				local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+				if targetRoot and (targetRoot.Position - root.Position).Magnitude <= HITBOX_SIZE / 2 then
+					pcall(function()
+						remote:FireServer("slash", target.Character, targetRoot.Position, Vector3.new(0, SLAP_POWER, 0))
+						if not targetRoot:FindFirstChild("BodyVelocity") then
+							local bv = Instance.new("BodyVelocity")
+							bv.MaxForce = Vector3.new(0, math.huge, 0)
+							bv.Velocity = Vector3.new(0, SLAP_POWER, 0)
+							bv.Parent = targetRoot
+							game.Debris:AddItem(bv, 0.5)
+						end
+					end)
+				end
+			end
+		end
+		task.wait(ATTACK_COOLDOWN)
+	end
+end
+
+RunService.Heartbeat:Connect(function()
+	if Spamming and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and hitboxIndicator then
+		hitboxIndicator.Position = LocalPlayer.Character.HumanoidRootPart.Position
+	end
+end)
+
+-- Aura Buttons
+
+window:Button("Enable Slap All", function()
+	Spamming = true
+	coroutine.wrap(triggerHitbox)()
+end)
+
+window:Button("Disable Slap All", function()
+	Spamming = false
+	if hitboxIndicator then hitboxIndicator:Destroy() end
+end)
+
+-- Power Boost
+window:Button("Slap Power", function()
+	local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild(slapToolName)
+	if tool then
+		local power = tool:FindFirstChild("Power")
+		if power then
+			power.Value = hugePower
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "Info",
+				Text = "Slap Power Activated",
+				Icon = "rbxassetid://112082878863231",
+				Duration = 6
+			})
+		end
+	else
+		game.StarterGui:SetCore("SendNotification", {
+			Title = "Error",
+			Text = "Get Slap Glove And Equip It",
+			Icon = "rbxassetid://77067602950967",
+			Duration = 8
+		})
+	end
+end)
+
+window:Button("Join Discord Server", function()
+	local link = "https://discord.gg/d37YjMMwCq"
+	if setclipboard then
+		setclipboard(link)
+		game.StarterGui:SetCore("SendNotification", {
+			Title = "Thanks!",
+			Text = "Discord Link Copied",
+			Icon = "rbxassetid://112082878863231",
+			Duration = 6
+		})
+	end
+end)
+
+window:Label("By @botreal1 on TikTok")
