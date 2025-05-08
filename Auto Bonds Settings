@@ -76,7 +76,7 @@ local function teleportTo(bond)
 
 	if not bond.Parent then
 		bondCount += 1
-		bondLabel.Text = "Bond Collected: " .. bondCount
+		bondLabel.Text = "Bonds Collected: " .. bondCount
 		print("Bonds taken! Total:", bondCount)
 	else
 		print("Failed to take bond within timeout.")
