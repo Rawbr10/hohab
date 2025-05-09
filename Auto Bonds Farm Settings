@@ -19,7 +19,7 @@ statusLabel.TextStrokeTransparency = 0.5
 statusLabel.Text = "Collecting Bonds..."
 statusLabel.Front = Enum.Font.Fantasy
 statusLabel.TextScaled = false
-statusLabrl.TextSize = 22.5
+statusLabel.TextSize = 22.5
 statusLabel.Parent = screenGui
 
 local player = Players.LocalPlayer
