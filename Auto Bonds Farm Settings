@@ -13,11 +13,10 @@ statusLabel.Size = UDim2.new(0.3, 0, 0.05, 0)
 statusLabel.Position = UDim2.new(0.35, 0, 0.4, 0)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextScaled = true
-statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.Font = Enum.Font.Fantasy
 statusLabel.TextColor3 = Color3.new(1, 1, 1)
 statusLabel.TextStrokeTransparency = 0.5
 statusLabel.Text = "Collecting Bonds..."
-statusLabel.Front = Enum.Font.Fantasy
 statusLabel.TextScaled = false
 statusLabel.TextSize = 22.5
 statusLabel.Parent = screenGui
@@ -164,7 +163,7 @@ end
 
 -- Show final count
 statusLabel.Text = "Total Bonds Collected: " .. tostring(bondCount)
-statusLabel.Front = Enum.Font.Fantasy
+statusLabel.Font = Enum.Font.Fantasy
 statusLabel.TextSize = 22.5
 
 task.wait(5.7)
