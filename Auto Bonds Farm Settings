@@ -1,0 +1,120 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local root = character:WaitForChild("HumanoidRootPart")
+
+local screenGui = Instance.new("ScreenGui", cloneref(game:GetService("CoreGui")))
+screenGui.Name = "BondUI"
+screenGui.ResetOnSpawn = false
+
+local bondLabel = Instance.new("TextLabel", screenGui)
+bondLabel.Size = UDim2.new(0.3, 0, 0.1, 0)
+bondLabel.Position = UDim2.new(0.35, 0, 0.45, 0)
+bondLabel.BackgroundTransparency = 1
+bondLabel.TextScaled = true
+bondLabel.Font = Enum.Font.SourceSansBold
+bondLabel.TextColor3 = Color3.new(1, 1, 1)
+bondLabel.TextStrokeTransparency = 0.5
+bondLabel.Text = "Bond Collected: 0"
+
+local activateRemote = ReplicatedStorage:WaitForChild("Shared")
+	:WaitForChild("Network")
+	:WaitForChild("RemotePromise")
+	:WaitForChild("Remotes")
+	:WaitForChild("C_ActivateObject")
+
+local lockedY = root.Position.Y
+task.spawn(function()
+	while true do
+		if root and root.Parent then
+			local pos = root.Position
+			root.Velocity = Vector3.new(root.Velocity.X, 0, root.Velocity.Z)
+			root.CFrame = CFrame.new(pos.X, lockedY, pos.Z)
+		end
+		task.wait()
+	end
+end)
+
+local function findNearestBond()
+	local closest, shortest = nil, math.huge
+	for _, model in workspace.RuntimeItems:GetDescendants() do
+		if model:IsA("Model") and model.Name:lower() == "bond" then
+			local part = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+			if part then
+				local dist = (part.Position - root.Position).Magnitude
+				if dist < shortest then
+					shortest = dist
+					closest = model
+				end
+			end
+		end
+	end
+	return closest
+end
+
+local bondCount = 0
+local function teleportTo(bond)
+	local part = bond.PrimaryPart or bond:FindFirstChildWhichIsA("BasePart")
+	if not part then return false end
+
+	root.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+
+	local success = false
+	for _ = 1, 20 do
+		if not bond.Parent then
+			success = true
+			break
+		end
+		activateRemote:FireServer(bond)
+		task.wait(0.1)
+	end
+
+	if success then
+		bondCount += 1
+		bondLabel.Text = "Bond Collected: " .. bondCount
+		print("Collected bond:", bondCount)
+	end
+
+	return success
+end
+
+-- Zig-zag parameters
+local xMin, xMax = -1024, 1024
+local zMin, zMax = -49872, 30000
+local zStep = 2048
+local y = -50
+local travelTime = 1
+local direction = 1
+
+local function tweenTo(pos)
+	local goal = {CFrame = CFrame.new(pos)}
+	local tween = TweenService:Create(root, TweenInfo.new(travelTime, Enum.EasingStyle.Linear), goal)
+	tween:Play()
+	local done = false
+	tween.Completed:Connect(function() done = true end)
+	while not done do
+		local bond = findNearestBond()
+		if bond then
+			tween:Cancel()
+			teleportTo(bond)
+			return
+		end
+		task.wait(0.1)
+	end
+end
+
+-- Infinite zig-zag with bond checks
+while true do
+	for z = zMax, zMin, -zStep do
+		local x1 = direction == 1 and xMin or xMax
+		local x2 = direction == 1 and xMax or xMin
+
+		tweenTo(Vector3.new(x1, y, z))
+		tweenTo(Vector3.new(x2, y, z))
+
+		direction *= -1
+	end
+end
