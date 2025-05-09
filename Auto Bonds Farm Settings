@@ -164,7 +164,7 @@ end
 -- Show final count
 statusLabel.Text = "Total Bonds Collected: " .. tostring(bondCount)
 statusLabel.Font = Enum.Font.GothamSemibold
-statusLabel.TextSize = 31
+statusLabel.TextSize = 30
 
 task.wait(5.7)
 
