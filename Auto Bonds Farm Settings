@@ -164,8 +164,8 @@ end
 -- Show final count
 statusLabel.Text = "Total Bonds Collected: " .. tostring(bondCount)
 statusLabel.Font = Enum.Font.GothamSemibold
-statusLabel.TextSize = 30
+statusLabel.TextSize = 26.9
 
-task.wait(5.7)
+task.wait(5.5)
 
 game:GetService("TeleportService"):Teleport(116495829188952, game.Players.LocalPlayer)
