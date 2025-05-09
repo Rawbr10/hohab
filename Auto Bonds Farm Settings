@@ -1,0 +1,173 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "BondUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = cloneref(game:GetService("CoreGui"))
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0.3, 0, 0.05, 0)
+statusLabel.Position = UDim2.new(0.35, 0, 0.4, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
+statusLabel.TextStrokeTransparency = 0.5
+statusLabel.Text = "Collecting Bonds..."
+statusLabel.Front = Enum.Font.Fantasy
+statusLabel.TextScaled = false
+statusLabel.TextSize = 22.5
+statusLabel.Parent = screenGui
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local root = character:WaitForChild("HumanoidRootPart")
+local lockedY = root.Position.Y
+
+local activateRemote = ReplicatedStorage:WaitForChild("Shared")
+	:WaitForChild("Network")
+	:WaitForChild("RemotePromise")
+	:WaitForChild("Remotes")
+	:WaitForChild("C_ActivateObject")
+
+local function findNearestBond()
+	local closest, shortestDist = nil, math.huge
+	for _, item in ipairs(workspace.RuntimeItems:GetDescendants()) do
+		if item:IsA("Model") and item.Name:lower() == "bond" then
+			local primary = item.PrimaryPart or item:FindFirstChildWhichIsA("BasePart")
+			if primary then
+				local dist = (primary.Position - root.Position).Magnitude
+				if dist < shortestDist then
+					shortestDist = dist
+					closest = item
+				end
+			end
+		end
+	end
+	return closest
+end
+
+task.spawn(function()
+	while true do
+		if root and root.Parent then
+			local pos = root.Position
+			root.Velocity = Vector3.new(root.Velocity.X, 0, root.Velocity.Z)
+			root.CFrame = CFrame.new(pos.X, lockedY, pos.Z)
+		end
+		task.wait()
+	end
+end)
+
+local bondCount = 0
+local targetCount = 123
+
+local function teleportTo(bond)
+	local primary = bond.PrimaryPart or bond:FindFirstChildWhichIsA("BasePart")
+	if not primary then return end
+
+	root.CFrame = primary.CFrame + Vector3.new(0, 5, 0)
+
+	local startTime = os.clock()
+	while bond.Parent and os.clock() - startTime < 1 do
+		activateRemote:FireServer(bond)
+		task.wait(0.1)
+	end
+
+	if not bond.Parent then
+		bondCount += 1
+	end
+end
+
+local activeTween = nil
+local travelTime = 1
+local function tweenTo(pos)
+	if activeTween then
+		activeTween:Cancel()
+	end
+
+	local tweenInfo = TweenInfo.new(travelTime, Enum.EasingStyle.Linear)
+	local goal = {CFrame = CFrame.new(pos)}
+	activeTween = TweenService:Create(root, tweenInfo, goal)
+
+	local finished = false
+	local lastTweenStart = os.clock()
+
+	local connection
+	connection = activeTween.Completed:Connect(function()
+		finished = true
+		if connection then connection:Disconnect() end
+	end)
+
+	activeTween:Play()
+
+	while not finished do
+		local bond = findNearestBond()
+		if bond then
+			activeTween:Cancel()
+			teleportTo(bond)
+			return
+		end
+
+		if os.clock() - lastTweenStart > 5 and not finished then
+			return tweenTo(pos)
+		end
+
+		task.wait(0.1)
+	end
+end
+
+local layerSize = 2048
+local halfSize = layerSize / 2
+local xStart = -halfSize
+local xEnd = halfSize
+local y = -50
+local zStart = 30000
+local zEnd = -49872
+local zStep = -layerSize
+
+-- Collect any bonds before scan
+while true do
+	local bond = findNearestBond()
+	if bond and bondCount < targetCount then
+		teleportTo(bond)
+	else
+		break
+	end
+	task.wait(0.05)
+end
+
+local z = zStart
+local direction = 1
+
+while bondCount < targetCount and ((zStep < 0 and z >= zEnd) or (zStep > 0 and z <= zEnd)) do
+	local startX = direction == 1 and xStart or xEnd
+	local endX = direction == 1 and xEnd or xStart
+
+	local startPos = Vector3.new(startX, y, z)
+	local endPos = Vector3.new(endX, y, z)
+
+	tweenTo(startPos)
+	tweenTo(endPos)
+
+	local bond = findNearestBond()
+	while bond and bondCount < targetCount do
+		teleportTo(bond)
+		bond = findNearestBond()
+	end
+
+	z += zStep
+	direction *= -1
+end
+
+-- Show final count
+statusLabel.Text = "Total Bonds Collected: " .. tostring(bondCount)
+statusLabel.Front = Enum.Font.Fantasy
+statusLabel.TextSize = 22.5
+
+task.wait(5.7)
+
+-- Teleport back to lobby
+TeleportService:Teleport(11242080385)
