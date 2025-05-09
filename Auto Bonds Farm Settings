@@ -168,5 +168,4 @@ statusLabel.TextSize = 31
 
 task.wait(5.7)
 
--- Teleport back to lobby
-TeleportService:Teleport(11242080385)
+game:GetService("TeleportService"):Teleport(116495829188952, game.Players.LocalPlayer)
