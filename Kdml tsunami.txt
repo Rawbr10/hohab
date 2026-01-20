@@ -1315,7 +1315,7 @@ task.spawn(function(arg1, arg2, arg3, arg4, arg5)
     local v597 = ReplicatedStorage:WaitForChild("RemoteFunctions")
     local v598 = v597:WaitForChild("UpgradeSpeed")
     local v599 = v598:InvokeServer(1)
-end)
+end
 task.spawn(function(arg1)
     local v1 = ReplicatedStorage.RemoteEvents.CollectMoney:FireServer("Slot1")
     local v2 = ReplicatedStorage.RemoteEvents.CollectMoney:FireServer("Slot2")
