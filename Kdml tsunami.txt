@@ -1,3 +1,4 @@
+do
 local Players = game:GetService('Players')
 local Workspace = game:GetService('Workspace')
 local RunService = game:GetService('RunService')
@@ -1276,7 +1277,6 @@ task.spawn(function(arg1, arg2, arg3, arg4, arg5)
     local v559 = v558:InvokeServer(1)
     task.wait(0.01)
     local v561 = ReplicatedStorage:WaitForChild("RemoteFunctions")
-do
     local v562 = v561:WaitForChild("UpgradeSpeed")
     local v563 = v562:InvokeServer(1)
     task.wait(0.01)
